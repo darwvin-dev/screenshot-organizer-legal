@@ -37,6 +37,12 @@ Screenshot Organizer references original images stored in Android MediaStore. Cl
 
 If enabled by the user, the app may show notifications for newly detected screenshots and reminders. Reliable realtime monitoring may use a visible Android foreground-service notification. Monitoring can be disabled from the app, and the service is not intended to run without the user's persisted choice and required Android permissions.
 
+## Optional App Lock
+
+Screenshot Organizer can optionally protect the organizer interface using Android's system biometric/device-credential prompt. Authentication is performed by Android; Screenshot Organizer receives only the success, failure, or cancellation result and does not receive or store fingerprint, face, PIN, pattern, or password data.
+
+When App Lock is enabled, the app also marks its Activity as secure so protected organizer content is not intentionally exposed through ordinary screenshots or recent-app previews. App Lock protects access to the app interface; it does not encrypt original screenshots stored by Android MediaStore.
+
 ## Backups
 
 Portable organizer backups never copy screenshot image bytes. A backup can contain folders, screenshot metadata, notes, tags, reminders, favorites, organization history, attachment references, automation rules/templates, OCR text, and local derived smart metadata.
@@ -71,7 +77,8 @@ Depending on Android version and enabled features, the app may request:
 - selected-photo access state on supported Android versions;
 - notification permission for screenshot and reminder notifications;
 - foreground-service permission for user-enabled realtime monitoring;
-- boot-completed reception to reconcile persisted monitoring state after restart.
+- boot-completed reception to reconcile persisted monitoring state after restart;
+- biometric/device-credential authentication for optional App Lock.
 
 Permissions are used only for the corresponding user-facing features and can be revoked through Android system settings.
 
