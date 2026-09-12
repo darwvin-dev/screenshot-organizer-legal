@@ -3,7 +3,7 @@
 Public legal documents for Android apps published by **darwvin-dev / Darwvin**.
 
 - [Screenshot Organizer Privacy Policy](https://darwvin-dev.github.io/screenshot-organizer-legal/)
-- [DarwPhone Privacy Policy](https://darwvin-dev.github.io/screenshot-organizer-legal/darwphone/)
+- [Darwvin Softphone Privacy Policy](https://darwvin-dev.github.io/screenshot-organizer-legal/darwphone/)
 
 Privacy/support contact: **darwvindev@gmail.com**
 
