@@ -5,7 +5,7 @@ title: Darwvin Softphone Privacy Policy
 
 # Darwvin Softphone Privacy Policy
 
-Effective date: 2026-09-12
+Effective date: 2026-09-18
 
 Darwvin Softphone is a SIP softphone. The app is designed to keep user data local except where network communication is required to provide SIP, media, push, provisioning, diagnostics requested by the user, or user-requested sharing.
 
@@ -32,8 +32,12 @@ When Firebase Cloud Messaging is configured, Google/Firebase provides an FCM reg
 
 Firebase push support is optional; direct SIP operation does not require Darwvin to operate a push backend.
 
-### QR provisioning and deep links
-QR provisioning uses Google Code Scanner from Google Play services. Darwvin Softphone parses provisioning data locally. External deep links are not permitted to carry SIP or TURN passwords; credential-bearing provisioning is limited to explicitly scanned or local provisioning input.
+### QR provisioning and enterprise enrollment
+QR provisioning uses Google Code Scanner from Google Play services. Darwvin Softphone parses local/static provisioning data on-device.
+
+For managed enterprise enrollment, a scanned QR code or `darwphone://enroll` deep link may contain an HTTPS enrollment endpoint and a one-time bearer token. Darwvin Softphone sends that token in the HTTPS `Authorization` header, together with an installation identifier and a device label, to the explicitly named enrollment endpoint. The enrollment response can contain SIP/PBX credentials and managed feature policy. Darwvin Softphone validates the response before presenting the account for review and stores accepted credentials only in the encrypted account store. Enrollment redirects are not followed, the endpoint must use HTTPS, and SIP/TURN passwords are not accepted directly in external deep-link URLs.
+
+The enterprise enrollment endpoint is operated by the user's organization/provider or another endpoint represented by the enrollment link; this build does not require a Darwvin-operated enrollment backend.
 
 ### Diagnostics
 Darwvin Softphone can collect a bounded in-memory SIP diagnostic trace when Developer Mode is enabled. The app attempts to redact authorization headers, secrets, tokens, SRTP inline keys, digest responses, and SIP user-parts before trace data is stored or exported. Diagnostic exports are created only when the user chooses to share them.
@@ -63,11 +67,13 @@ The current Darwvin Softphone codebase does not include an advertising SDK or a 
 - FCM token: until replaced by Firebase or app data is cleared.
 - Developer SIP trace: bounded local/in-memory diagnostic data while Developer Mode is enabled; exported only by explicit user action.
 - SIP instant messages: the current implementation keeps a bounded in-memory session list and does not persist a chat archive.
+- Enterprise enrollment token: held only for the enrollment request and not intentionally persisted as an account credential.
 
 ## Data sharing
 
 Darwvin Softphone shares data only as needed with:
 - the SIP/PBX, STUN, and TURN services configured by the user or provider;
+- the HTTPS enterprise enrollment endpoint named by an enrollment QR/deep link, when enterprise enrollment is used;
 - Firebase Cloud Messaging when push is enabled;
 - Google Play services for the code-scanner component;
 - destinations explicitly selected by the user through Android sharing.
@@ -76,7 +82,7 @@ Darwvin Softphone does not sell user data.
 
 ## Security
 
-Persisted SIP credentials use Android Keystore-backed authenticated encryption. Android app-private storage is used for call history and recordings. TLS/SRTP options are available for compatible SIP providers. No security mechanism can guarantee absolute protection.
+Persisted SIP credentials use Android Keystore-backed authenticated encryption. Android app-private storage is used for call history and recordings. TLS/SRTP options are available for compatible SIP providers. Enterprise enrollment requires HTTPS and does not follow redirects. No security mechanism can guarantee absolute protection.
 
 ## Changes
 
