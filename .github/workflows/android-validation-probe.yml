@@ -1,0 +1,20 @@
+name: Android Validation Runner Probe
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/android-validation-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Confirm hosted runner allocation
+        run: |
+          uname -a
+          java -version
+          echo "regular hosted runner allocated"
