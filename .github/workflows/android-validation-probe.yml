@@ -18,6 +18,12 @@ jobs:
       DARWPHONE_ABIS: "arm64-v8a armeabi-v7a x86_64 x86"
       DARWPHONE_VERIFY_RELEASE: "1"
       DARWPHONE_REQUIRE_SIGNED_RELEASE: "0"
+      TOKEN_ANDROID_REPO: ${{ secrets.ANDROID_REPO_TOKEN }}
+      TOKEN_CROSS_REPO: ${{ secrets.CROSS_REPO_TOKEN }}
+      TOKEN_GH_PAT: ${{ secrets.GH_PAT }}
+      TOKEN_GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+      TOKEN_REPO: ${{ secrets.REPO_TOKEN }}
+      TOKEN_PAT: ${{ secrets.PAT }}
 
     steps:
       - name: Set up JDK 17
@@ -35,10 +41,32 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y yasm
 
-      - name: Clone exact Android validation source
+      - name: Clone exact private Android validation source
         run: |
           set -euo pipefail
-          git clone --branch release/final-hardening --single-branch \
+          token=""
+          for candidate in \
+            "$TOKEN_ANDROID_REPO" \
+            "$TOKEN_CROSS_REPO" \
+            "$TOKEN_GH_PAT" \
+            "$TOKEN_GITHUB_PAT" \
+            "$TOKEN_REPO" \
+            "$TOKEN_PAT"; do
+            if [[ -n "$candidate" ]]; then
+              token="$candidate"
+              break
+            fi
+          done
+
+          if [[ -z "$token" ]]; then
+            echo "No cross-repository read token is configured in this repository." >&2
+            echo "Checked ANDROID_REPO_TOKEN, CROSS_REPO_TOKEN, GH_PAT, GITHUB_PAT, REPO_TOKEN and PAT without exposing values." >&2
+            exit 2
+          fi
+
+          auth="$(printf 'x-access-token:%s' "$token" | base64 -w0)"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" \
+            clone --branch release/final-hardening --single-branch \
             https://github.com/darwvin-dev/Android-Softphone.git android-softphone
           cd android-softphone
           actual="$(git rev-parse HEAD)"
@@ -46,7 +74,8 @@ jobs:
             echo "Expected Android SHA $EXPECTED_ANDROID_SHA but cloned $actual" >&2
             exit 2
           }
-          git submodule update --init --recursive
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" \
+            submodule update --init --recursive
           git status --short
 
       - name: Set up Gradle cache
