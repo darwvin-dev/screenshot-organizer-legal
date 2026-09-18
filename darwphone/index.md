@@ -30,7 +30,7 @@ If the user grants Contacts permission, Darwvin Softphone reads device contacts 
 ### Push notifications
 When Firebase Cloud Messaging is configured, Google/Firebase provides an FCM registration token. Darwvin Softphone stores that token locally and may include it in RFC 8599 SIP Contact parameters sent to the user's configured SIP registrar so the registrar can request a wake-up for an incoming call. Firebase/Google and the user's SIP provider process data under their own terms and privacy policies.
 
-Firebase push support is optional; direct SIP operation does not require Darwvin to operate a push backend.
+Firebase push support is optional; direct SIP operation does not require Darwvin to operate a push backend. If Firebase configuration is removed or switched to a different Firebase project, Darwvin Softphone discards the previously stored Firebase project/token pair before later SIP registrations can advertise it.
 
 ### QR provisioning and enterprise enrollment
 QR provisioning uses Google Code Scanner from Google Play services. Darwvin Softphone parses local/static provisioning data on-device.
@@ -64,7 +64,7 @@ The current Darwvin Softphone codebase does not include an advertising SDK or a 
 - Encrypted SIP account data: until the account is removed or app data is cleared.
 - Call history: up to 1,000 local entries, until cleared.
 - Call recordings: according to the user-selected retention policy (30 days, 90 days, 1 year, or Forever), unless deleted sooner or app data is cleared.
-- FCM token: until replaced by Firebase or app data is cleared.
+- FCM token and Firebase project pairing: until replaced by Firebase, Firebase configuration is removed/changed, or app data is cleared.
 - Developer SIP trace: bounded local/in-memory diagnostic data while Developer Mode is enabled; exported only by explicit user action.
 - SIP instant messages: the current implementation keeps a bounded in-memory session list and does not persist a chat archive.
 - Enterprise enrollment token: held only for the enrollment request and not intentionally persisted as an account credential.
