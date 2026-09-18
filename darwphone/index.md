@@ -35,7 +35,7 @@ Firebase push support is optional; direct SIP operation does not require Darwvin
 ### QR provisioning and enterprise enrollment
 QR provisioning uses Google Code Scanner from Google Play services. Darwvin Softphone parses local/static provisioning data on-device.
 
-For managed enterprise enrollment, a scanned QR code or `darwphone://enroll` deep link may contain an HTTPS enrollment endpoint and a one-time bearer token. Darwvin Softphone sends that token in the HTTPS `Authorization` header, together with an installation identifier and a device label, to the explicitly named enrollment endpoint. The enrollment response can contain SIP/PBX credentials and managed feature policy. Darwvin Softphone validates the response before presenting the account for review and stores accepted credentials only in the encrypted account store. Enrollment redirects are not followed, the endpoint must use HTTPS, and SIP/TURN passwords are not accepted directly in external deep-link URLs.
+For managed enterprise enrollment, a scanned QR code or `darwphone://enroll` deep link may contain an HTTPS enrollment endpoint and a one-time bearer token. Before an external/browsable enrollment link causes a network request, Darwvin Softphone validates the link and asks the user to confirm the destination host. If the user continues, Darwvin Softphone sends the one-time token in the HTTPS `Authorization` header, together with an app-generated installation identifier and a device manufacturer/model label, to the explicitly named enrollment endpoint. The enrollment response can contain SIP/PBX credentials and managed feature policy. Darwvin Softphone validates the response before presenting the account for review and stores accepted credentials only in the encrypted account store. Enrollment redirects are not followed, the endpoint must use HTTPS, and SIP/TURN passwords are not accepted directly in external deep-link URLs.
 
 The enterprise enrollment endpoint is operated by the user's organization/provider or another endpoint represented by the enrollment link; this build does not require a Darwvin-operated enrollment backend.
 
@@ -68,12 +68,14 @@ The current Darwvin Softphone codebase does not include an advertising SDK or a 
 - Developer SIP trace: bounded local/in-memory diagnostic data while Developer Mode is enabled; exported only by explicit user action.
 - SIP instant messages: the current implementation keeps a bounded in-memory session list and does not persist a chat archive.
 - Enterprise enrollment token: held only for the enrollment request and not intentionally persisted as an account credential.
+- App-generated enterprise installation identifier: stored in app-private preferences for the app installation and removed when app data is cleared/uninstalled.
+- Enterprise device label: derived from the device manufacturer/model for the confirmed enrollment request and not maintained as a separate Darwvin profile by this build.
 
 ## Data sharing
 
 Darwvin Softphone shares data only as needed with:
 - the SIP/PBX, STUN, and TURN services configured by the user or provider;
-- the HTTPS enterprise enrollment endpoint named by an enrollment QR/deep link, when enterprise enrollment is used;
+- the HTTPS enterprise enrollment endpoint named by an enrollment QR/deep link, after the user confirms that enrollment, when enterprise enrollment is used;
 - Firebase Cloud Messaging when push is enabled;
 - Google Play services for the code-scanner component;
 - destinations explicitly selected by the user through Android sharing.
@@ -82,7 +84,7 @@ Darwvin Softphone does not sell user data.
 
 ## Security
 
-Persisted SIP credentials use Android Keystore-backed authenticated encryption. Android app-private storage is used for call history and recordings. TLS/SRTP options are available for compatible SIP providers. Enterprise enrollment requires HTTPS and does not follow redirects. No security mechanism can guarantee absolute protection.
+Persisted SIP credentials use Android Keystore-backed authenticated encryption. Android app-private storage is used for call history and recordings. TLS/SRTP options are available for compatible SIP providers. Enterprise enrollment requires HTTPS, does not follow redirects, and external/browsable enrollment links require user confirmation before the enrollment request is sent. No security mechanism can guarantee absolute protection.
 
 ## Changes
 
